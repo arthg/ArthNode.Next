@@ -1,0 +1,236 @@
+swagger: '2.0'
+
+info:
+  version: "0.0.1"
+  title: Mobile Photo Account Opening
+  description: A RESTful set of services to enable the processing of bank account opening application forms. The service is responsible for the life-cycle of an account opening application from it's creation up to the point where the application is considered "submitted" for review of a bank employee, using another system.
+  termsOfService: see Christopher
+  contact:
+    name: MPAO API team
+    email: cebbert@cachetfinancial.com
+    url: http://www.cachetfinancial.com
+  license:
+    name: see Christopher
+basePath: /api
+schemes:
+  - https
+securityDefinitions:
+  basicAuth:
+    type: basic
+    description: Basic Authentication
+    
+paths:
+  /about:
+    get:
+      security:
+        - basicAuth: []
+      description: Verifies user credentials and provides system information
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+               apiVersion:
+                 type: string
+               orgName:
+                 type: string
+  /applications:
+    post:
+      security:
+        - basicAuth: []
+      description: Starts new application
+      produces:
+        - application/json
+      parameters:
+        - name: application
+          in: body
+          description: application properties
+          required: true
+          schema:
+            type: object
+            required: 
+              - phoneNumber
+              - email
+            properties:
+              phoneNumber:
+                type: string
+              email:
+                type: string
+        - name: Content-type
+          in: header
+          description: application/json
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: CreateApplicationCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+      responses:
+        '201':
+          headers:
+            location:
+              description: newly created application uri
+              type: string
+          description: created application id
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+            #$ref: '#/definitions/newResourceId'
+        '403':
+          description: missing required element
+  /applications/{id}:
+    post:      
+      security:
+        - basicAuth: []
+      description: Upload drivers license front image. Invalidates any previous OCR data. Does not change the data on application.
+      consumes:
+        - image/jpeg
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Content-type
+          in: header
+          description: image/jpeg
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: SetDlImageFrontCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+        - name: image
+          in: formData
+          description: binary stream of image
+          required: true
+          type: file
+      responses:
+        '202':
+          description: Accepted
+  /applications/{id}:
+    post:      
+      security:
+        - basicAuth: []
+      description: Upload drivers license rear image. Invalidates any previous OCR data. Does not change the data on application.
+      consumes:
+        - image/jpeg
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Content-type
+          in: header
+          description: image/jpeg
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: SetDlImageRearCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+        - name: image
+          in: formData
+          description: binary stream of image
+          required: true
+          type: file
+      responses:
+        '202':
+          description: Accepted
+          
+  /applications/{id}:
+    post:      
+      security:
+        - basicAuth: []
+      description: Upload government photo id front image. Invalidates any previous OCR data. Does not change the data on application.
+      consumes:
+        - image/jpeg
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Content-type
+          in: header
+          description: image/jpeg
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: SetPhotoIdImageFrontCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+        - name: image
+          in: formData
+          description: binary stream of image
+          required: true
+          type: file
+      responses:
+        '202':
+          description: Accepted
+
+  /applications/{id}:
+    post:      
+      security:
+        - basicAuth: []
+      description: Upload government photo id rear image. Invalidates any previous OCR data. Does not change the data on application.
+      consumes:
+        - image/jpeg
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Content-type
+          in: header
+          description: image/jpeg
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: SetPhotoIdImageRearCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+        - name: image
+          in: formData
+          description: binary stream of image
+          required: true
+          type: file
+      responses:
+        '202':
+          description: Accepted
+          
