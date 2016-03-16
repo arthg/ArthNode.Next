@@ -25,6 +25,8 @@ paths:
       security:
         - basicAuth: []
       description: Verifies user credentials and provides system information
+      produces:
+        - application/json
       responses:
         200:
           description: Ok
@@ -35,11 +37,14 @@ paths:
                  type: string
                orgName:
                  type: string
+                 
   /applications:
     post:
       security:
         - basicAuth: []
       description: Starts new application
+      consumes:
+        - application/json
       produces:
         - application/json
       parameters:
@@ -76,17 +81,17 @@ paths:
         '201':
           headers:
             location:
-              description: newly created application uri
+              description: Newly created application uri
               type: string
-          description: created application id
+          description: Created
           schema:
             type: object
             properties:
               id:
                 type: string
-            #$ref: '#/definitions/newResourceId'
         '403':
-          description: missing required element
+          description: Missing required element
+          
   /applications/{id}:
     post:      
       security:
@@ -233,4 +238,65 @@ paths:
       responses:
         '202':
           description: Accepted
-          
+
+  /applications/{id}:
+    post:      
+      security:
+        - basicAuth: []
+      description: Analyze uploaded photo id images. Starts an OCR process.
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Content-type
+          in: header
+          description: application/json
+          required: true
+          type: string
+        - name: domain-model
+          in: header
+          description: AnalyzePhotoIdCommand
+          required: true
+          type: string
+        - name: version
+          in: header
+          description: v0.0.1
+          required: true
+          type: string
+      responses:
+        '202':
+          description: Accepted
+        '403':
+          description: Missing images
+
+  /applications/{id}:
+    get:      
+      security:
+        - basicAuth: []
+      description: Get the current data from an application. It may have empty fields if data is not yet provided. The application data need to be filled from OCR result by the client. It may contain more data.
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Id of application
+          required: true
+          type: string
+        - name: Accept
+          in: header
+          description: application/json
+          required: true
+          type: string
+        - name: If-None-Match
+          in: header
+          description: XXX
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Accepted
+      
